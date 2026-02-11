@@ -203,25 +203,30 @@ async function buscarEnArchivos(termsList) {
 
             lineas.forEach((linea, index) => {
                 termsList.forEach(termino => {
-                    const lineaLower = linea.toLowerCase();
-                    const terminoLower = termino.toLowerCase();
-                    let pos = 0;
 
-                    // Buscar TODAS las ocurrencias en la línea
-                    while ((pos = lineaLower.indexOf(terminoLower, pos)) !== -1) {
+                    // Escapar caracteres especiales del término
+                    const terminoEscapado = termino.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+                    // Crear regex global e insensible a mayúsculas
+                    const regex = new RegExp(terminoEscapado, 'gi');
+
+                    let match;
+
+                    while ((match = regex.exec(linea)) !== null) {
                         resultados.push({
                             termino: termino,
                             archivo: filePath,
                             nombreArchivo: filePath.split('/').pop(),
                             tipoMetadata: getTipoArchivo(filePath),
                             lineaNumero: index + 1,
-                            columna: pos + 1,
+                            columna: match.index + 1,
                             contenido: linea.trim()
                         });
-                        pos += terminoLower.length;
                     }
+
                 });
             });
+
         } catch (error) {
             console.log('Could not read:', file.name);
         }
