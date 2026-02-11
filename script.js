@@ -52,7 +52,10 @@ const SF_FOLDERS = [
 // Verificar si un archivo es metadata de Salesforce
 function esSalesforce(filePath) {
     const lower = filePath.toLowerCase().replace(/\\/g, '/');
-
+    
+    if (lower.includes('/.git/') || lower.startsWith('.git/')) {
+        return false;
+    }
     for (const folder of SF_FOLDERS) {
         if (lower.includes(folder)) return true;
     }
