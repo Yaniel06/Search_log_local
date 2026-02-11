@@ -19,77 +19,77 @@ let selectedFiles = [];
 let selectionType = 'folder';
 let ultimosResultados = [];
 
-// Extensiones de metadata de Salesforce
-const SF_EXTENSIONS = [
-    '.cls', '.trigger', '.page', '.component',
-    '.cmp', '.evt', '.app',
-    '.flow', '.flow-meta.xml',
-    '.object', '.object-meta.xml', '.field-meta.xml',
-    '.layout', '.layout-meta.xml',
-    '.profile', '.profile-meta.xml',
-    '.permissionset', '.permissionset-meta.xml',
-    '.validationRule-meta.xml',
-    '.workflow', '.workflow-meta.xml',
-    '.report', '.report-meta.xml',
-    '.dashboard', '.labels', '.labels-meta.xml',
-    '.resource-meta.xml', '.tab-meta.xml',
-    '.flexipage-meta.xml', '.remoteSite-meta.xml',
-    '.quickAction-meta.xml', '.approvalProcess-meta.xml',
-    '.assignmentRules-meta.xml', '.sharingRules-meta.xml',
-    '.globalValueSet-meta.xml', '.standardValueSet-meta.xml',
+// Extensiones binarias que NO se deben leer (no son texto)
+const BINARY_EXTENSIONS = [
+    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.ico', '.svg',
+    '.zip', '.rar', '.7z', '.tar', '.gz',
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+    '.exe', '.dll', '.so', '.dylib',
+    '.mp3', '.mp4', '.wav', '.avi', '.mov', '.mkv',
+    '.woff', '.woff2', '.ttf', '.eot',
+    '.class', '.jar', '.pyc',
 ];
 
-// Carpetas conocidas de Salesforce
-const SF_FOLDERS = [
-    '/classes/', '/triggers/', '/pages/', '/components/',
-    '/lwc/', '/aura/', '/flows/', '/objects/',
-    '/layouts/', '/profiles/', '/permissionsets/',
-    '/workflows/', '/reports/', '/dashboards/',
-    '/labels/', '/staticresources/', '/tabs/',
-    '/flexipages/', '/quickActions/',
+// Carpetas que se deben ignorar
+const IGNORED_FOLDERS = [
+    '/.git/', '/node_modules/', '/.sfdx/', '/.sf/',
+    '/dist/', '/build/', '/__pycache__/',
+    '/.vscode/', '/.idea/',
 ];
 
-// Verificar si un archivo es metadata de Salesforce
-function esSalesforce(filePath) {
+// Verificar si un archivo se debe ignorar
+function debeIgnorar(filePath) {
     const lower = filePath.toLowerCase().replace(/\\/g, '/');
-    
-    if (lower.includes('/.git/') || lower.startsWith('.git/')) {
-        return false;
-    }
-    for (const folder of SF_FOLDERS) {
+
+    // Ignorar carpetas de sistema/dependencias
+    for (const folder of IGNORED_FOLDERS) {
         if (lower.includes(folder)) return true;
     }
+    if (lower.startsWith('.git/')) return true;
 
-    for (const ext of SF_EXTENSIONS) {
+    // Ignorar archivos binarios
+    for (const ext of BINARY_EXTENSIONS) {
         if (lower.endsWith(ext)) return true;
     }
 
     return false;
 }
 
-// Determinar el tipo de metadata por extensión
-function getTipoMetadata(filePath) {
+// Obtener tipo de archivo por extensión
+function getTipoArchivo(filePath) {
     const lower = filePath.toLowerCase();
     if (lower.endsWith('.cls')) return 'Apex Class';
     if (lower.endsWith('.trigger')) return 'Apex Trigger';
     if (lower.endsWith('.page')) return 'VF Page';
     if (lower.endsWith('.component')) return 'VF Component';
     if (lower.endsWith('.cmp')) return 'Aura Component';
-    if (lower.endsWith('.evt')) return 'Aura Event';
-    if (lower.endsWith('.app')) return 'Aura App';
-    if (lower.includes('.flow')) return 'Flow';
-    if (lower.includes('.object')) return 'Object';
-    if (lower.includes('.field-meta')) return 'Field';
-    if (lower.includes('.layout')) return 'Layout';
-    if (lower.includes('.profile')) return 'Profile';
-    if (lower.includes('.permissionset')) return 'Permission Set';
-    if (lower.includes('.validationRule')) return 'Validation Rule';
-    if (lower.includes('.workflow')) return 'Workflow';
-    if (lower.includes('.report')) return 'Report';
-    if (lower.includes('.dashboard')) return 'Dashboard';
-    if (lower.includes('/lwc/')) return 'LWC';
-    if (lower.includes('/aura/')) return 'Aura';
-    return 'Metadata';
+    if (lower.endsWith('.js')) return 'JavaScript';
+    if (lower.endsWith('.ts')) return 'TypeScript';
+    if (lower.endsWith('.jsx')) return 'JSX';
+    if (lower.endsWith('.tsx')) return 'TSX';
+    if (lower.endsWith('.html')) return 'HTML';
+    if (lower.endsWith('.css')) return 'CSS';
+    if (lower.endsWith('.xml')) return 'XML';
+    if (lower.endsWith('.json')) return 'JSON';
+    if (lower.endsWith('.yaml') || lower.endsWith('.yml')) return 'YAML';
+    if (lower.endsWith('.py')) return 'Python';
+    if (lower.endsWith('.java')) return 'Java';
+    if (lower.endsWith('.cs')) return 'C#';
+    if (lower.endsWith('.cpp') || lower.endsWith('.c') || lower.endsWith('.h')) return 'C/C++';
+    if (lower.endsWith('.rb')) return 'Ruby';
+    if (lower.endsWith('.php')) return 'PHP';
+    if (lower.endsWith('.sql')) return 'SQL';
+    if (lower.endsWith('.sh') || lower.endsWith('.bash')) return 'Shell';
+    if (lower.endsWith('.md')) return 'Markdown';
+    if (lower.endsWith('.txt')) return 'Text';
+    if (lower.endsWith('.csv')) return 'CSV';
+    if (lower.endsWith('.log')) return 'Log';
+    if (lower.endsWith('.properties')) return 'Properties';
+    if (lower.endsWith('.cfg') || lower.endsWith('.conf') || lower.endsWith('.ini')) return 'Config';
+
+    // Extraer extensión genérica
+    const ext = filePath.split('.').pop();
+    return ext ? ext.toUpperCase() : 'File';
 }
 
 // Cuando se hace clic en "Select Folder"
@@ -126,10 +126,10 @@ folderInput.addEventListener('change', function(e) {
     if (selectedFiles.length > 0) {
         const firstFilePath = selectedFiles[0].webkitRelativePath;
         const folderName = firstFilePath.split('/')[0];
-        const sfCount = selectedFiles.filter(f => esSalesforce(f.webkitRelativePath || f.name)).length;
+        const searchable = selectedFiles.filter(f => !debeIgnorar(f.webkitRelativePath || f.name)).length;
 
         selectionPath.value = `📁 ${folderName}`;
-        selectionCount.textContent = `${sfCount} metadata / ${selectedFiles.length} total`;
+        selectionCount.textContent = `${searchable} searchable / ${selectedFiles.length} total`;
         selectionCount.classList.add('has-files');
     }
 });
@@ -139,14 +139,14 @@ filesInput.addEventListener('change', function(e) {
     selectedFiles = Array.from(e.target.files);
 
     if (selectedFiles.length > 0) {
-        const sfCount = selectedFiles.filter(f => esSalesforce(f.webkitRelativePath || f.name)).length;
+        const searchable = selectedFiles.filter(f => !debeIgnorar(f.webkitRelativePath || f.name)).length;
 
         if (selectedFiles.length === 1) {
             selectionPath.value = `📄 ${selectedFiles[0].name}`;
         } else {
             selectionPath.value = `📄 ${selectedFiles.length} selected files`;
         }
-        selectionCount.textContent = `${sfCount} metadata / ${selectedFiles.length} total`;
+        selectionCount.textContent = `${searchable} searchable / ${selectedFiles.length} total`;
         selectionCount.classList.add('has-files');
     }
 });
@@ -190,15 +190,15 @@ searchBtn.addEventListener('click', async function() {
     searchBtn.disabled = false;
 });
 
-// Función para buscar en los archivos (solo Salesforce)
+// Función para buscar en los archivos (TODOS los archivos de texto)
 async function buscarEnArchivos(termsList) {
     const resultados = [];
 
     for (const file of selectedFiles) {
         const filePath = file.webkitRelativePath || file.name;
 
-        // Solo archivos de Salesforce
-        if (!esSalesforce(filePath)) continue;
+        // Solo ignorar binarios y carpetas de sistema
+        if (debeIgnorar(filePath)) continue;
 
         try {
             const contenido = await leerArchivo(file);
@@ -211,7 +211,7 @@ async function buscarEnArchivos(termsList) {
                             termino: termino,
                             archivo: filePath,
                             nombreArchivo: filePath.split('/').pop(),
-                            tipoMetadata: getTipoMetadata(filePath),
+                            tipoMetadata: getTipoArchivo(filePath),
                             lineaNumero: index + 1,
                             contenido: linea.trim()
                         });
@@ -244,7 +244,7 @@ function mostrarResultados(resultados) {
     if (resultsCount) resultsCount.textContent = resultados.length;
 
     if (resultados.length === 0) {
-        resultsContent.innerHTML = '<div class="no-results"><p>No references found in Salesforce metadata files.</p></div>';
+        resultsContent.innerHTML = '<div class="no-results"><p>No references found.</p></div>';
         if (exportExcelBtn) exportExcelBtn.style.display = 'none';
         return;
     }
@@ -310,7 +310,7 @@ if (exportExcelBtn) {
         if (ultimosResultados.length === 0) return;
 
         const wsData = [
-            ['Reference Name', 'Metadata Name', 'Metadata Type', 'File Path', 'Line', 'Content']
+            ['Reference Name', 'File Name', 'File Type', 'File Path', 'Line', 'Content']
         ];
 
         ultimosResultados.forEach(r => {
@@ -328,18 +328,18 @@ if (exportExcelBtn) {
         const ws = XLSX.utils.aoa_to_sheet(wsData);
 
         ws['!cols'] = [
-            { wch: 30 },  // Reference Name
-            { wch: 35 },  // Metadata Name
-            { wch: 20 },  // Metadata Type
-            { wch: 60 },  // File Path
-            { wch: 8 },   // Line
-            { wch: 80 },  // Content
+            { wch: 30 },
+            { wch: 35 },
+            { wch: 20 },
+            { wch: 60 },
+            { wch: 8 },
+            { wch: 80 },
         ];
 
         XLSX.utils.book_append_sheet(wb, ws, 'Search Results');
 
         const ts = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, `MetaFinder_Results_${ts}.xlsx`);
+        XLSX.writeFile(wb, `SearchResults_${ts}.xlsx`);
     });
 }
 
