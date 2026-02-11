@@ -41,13 +41,11 @@ const IGNORED_FOLDERS = [
 function debeIgnorar(filePath) {
     const lower = filePath.toLowerCase().replace(/\\/g, '/');
 
-    // Ignorar carpetas de sistema/dependencias
     for (const folder of IGNORED_FOLDERS) {
         if (lower.includes(folder)) return true;
     }
     if (lower.startsWith('.git/')) return true;
 
-    // Ignorar archivos binarios
     for (const ext of BINARY_EXTENSIONS) {
         if (lower.endsWith(ext)) return true;
     }
@@ -87,7 +85,6 @@ function getTipoArchivo(filePath) {
     if (lower.endsWith('.properties')) return 'Properties';
     if (lower.endsWith('.cfg') || lower.endsWith('.conf') || lower.endsWith('.ini')) return 'Config';
 
-    // Extraer extensión genérica
     const ext = filePath.split('.').pop();
     return ext ? ext.toUpperCase() : 'File';
 }
@@ -206,15 +203,22 @@ async function buscarEnArchivos(termsList) {
 
             lineas.forEach((linea, index) => {
                 termsList.forEach(termino => {
-                    if (linea.toLowerCase().includes(termino.toLowerCase())) {
+                    const lineaLower = linea.toLowerCase();
+                    const terminoLower = termino.toLowerCase();
+                    let pos = 0;
+
+                    // Buscar TODAS las ocurrencias en la línea
+                    while ((pos = lineaLower.indexOf(terminoLower, pos)) !== -1) {
                         resultados.push({
                             termino: termino,
                             archivo: filePath,
                             nombreArchivo: filePath.split('/').pop(),
                             tipoMetadata: getTipoArchivo(filePath),
                             lineaNumero: index + 1,
+                            columna: pos + 1,
                             contenido: linea.trim()
                         });
+                        pos += terminoLower.length;
                     }
                 });
             });
@@ -284,7 +288,7 @@ function mostrarResultados(resultados) {
                 <div class="result-item-info">
                     <span class="result-item-name">${escapeHtml(resultado.nombreArchivo)}</span>
                     <span class="result-item-path">${escapeHtml(resultado.archivo)}</span>
-                    <span class="result-item-line">Line ${resultado.lineaNumero}: <code>${escapeHtml(resultado.contenido)}</code></span>
+                    <span class="result-item-line">Line ${resultado.lineaNumero}, Col ${resultado.columna}: <code>${escapeHtml(resultado.contenido)}</code></span>
                 </div>`;
             body.appendChild(div);
         });
@@ -310,7 +314,7 @@ if (exportExcelBtn) {
         if (ultimosResultados.length === 0) return;
 
         const wsData = [
-            ['Reference Name', 'File Name', 'File Type', 'File Path', 'Line', 'Content']
+            ['Reference Name', 'File Name', 'File Type', 'File Path', 'Line', 'Column', 'Content']
         ];
 
         ultimosResultados.forEach(r => {
@@ -320,6 +324,7 @@ if (exportExcelBtn) {
                 r.tipoMetadata,
                 r.archivo,
                 r.lineaNumero,
+                r.columna,
                 r.contenido
             ]);
         });
@@ -332,6 +337,7 @@ if (exportExcelBtn) {
             { wch: 35 },
             { wch: 20 },
             { wch: 60 },
+            { wch: 8 },
             { wch: 8 },
             { wch: 80 },
         ];
