@@ -56,32 +56,217 @@ function debeIgnorar(filePath) {
 
 function getTipoArchivo(filePath) {
     const lower = filePath.toLowerCase();
-    if (lower.endsWith('.cls')) return 'Apex Class';
-    if (lower.endsWith('.trigger')) return 'Apex Trigger';
-    if (lower.endsWith('.page')) return 'VF Page';
+
+    // ── Salesforce Metadata (antes de .xml genérico) ──
+    // Apex
+    if (lower.endsWith('.cls-meta.xml'))             return 'Apex Class Meta';
+    if (lower.endsWith('.trigger-meta.xml'))          return 'Apex Trigger Meta';
+
+    // Visualforce
+    if (lower.endsWith('.page-meta.xml'))             return 'VF Page Meta';
+    if (lower.endsWith('.component-meta.xml'))         return 'VF Component Meta';
+
+    // LWC / Aura
+    if (lower.endsWith('.cmp-meta.xml'))              return 'Aura Component Meta';
+    if (lower.endsWith('.app-meta.xml'))              return 'Aura App Meta';
+    if (lower.endsWith('.evt-meta.xml'))              return 'Aura Event Meta';
+    if (lower.endsWith('.intf-meta.xml'))             return 'Aura Interface Meta';
+    if (lower.endsWith('.tokens-meta.xml'))           return 'Aura Tokens Meta';
+    if (lower.endsWith('.js-meta.xml'))               return 'LWC Meta';
+
+    // Objects & Fields
+    if (lower.endsWith('.object-meta.xml'))           return 'Custom Object Meta';
+    if (lower.endsWith('.field-meta.xml'))            return 'Custom Field Meta';
+    if (lower.endsWith('.listview-meta.xml'))         return 'List View Meta';
+    if (lower.endsWith('.recordtype-meta.xml'))       return 'Record Type Meta';
+    if (lower.endsWith('.compactlayout-meta.xml'))    return 'Compact Layout Meta';
+    if (lower.endsWith('.fieldset-meta.xml'))         return 'Field Set Meta';
+    if (lower.endsWith('.index-meta.xml'))            return 'Custom Index Meta';
+    if (lower.endsWith('.businessprocess-meta.xml'))  return 'Business Process Meta';
+    if (lower.endsWith('.weblink-meta.xml'))          return 'Web Link Meta';
+    if (lower.endsWith('.validationrule-meta.xml'))   return 'Validation Rule Meta';
+    if (lower.endsWith('.sharingreason-meta.xml'))    return 'Sharing Reason Meta';
+
+    // Layouts & FlexiPages
+    if (lower.endsWith('.layout-meta.xml'))           return 'Page Layout Meta';
+    if (lower.endsWith('.flexipage-meta.xml'))        return 'FlexiPage Meta';
+
+    // Tabs
+    if (lower.endsWith('.tab-meta.xml'))              return 'Custom Tab Meta';
+
+    // Flows & Processes
+    if (lower.endsWith('.flow-meta.xml'))             return 'Flow Meta';
+
+    // Approval Processes
+    if (lower.endsWith('.approvalprocess-meta.xml'))  return 'Approval Process Meta';
+
+    // Workflows
+    if (lower.endsWith('.workflow-meta.xml'))         return 'Workflow Meta';
+    if (lower.endsWith('.workflowrule-meta.xml'))     return 'Workflow Rule Meta';
+    if (lower.endsWith('.workflowfieldupdate-meta.xml'))  return 'Workflow Field Update Meta';
+    if (lower.endsWith('.workflowalert-meta.xml'))    return 'Workflow Alert Meta';
+    if (lower.endsWith('.workflowoutboundmessage-meta.xml')) return 'Workflow Outbound Msg Meta';
+    if (lower.endsWith('.workflowtask-meta.xml'))     return 'Workflow Task Meta';
+
+    // Assignment & Auto-Response Rules
+    if (lower.endsWith('.assignmentrules-meta.xml'))  return 'Assignment Rules Meta';
+    if (lower.endsWith('.autoresponserules-meta.xml')) return 'Auto-Response Rules Meta';
+    if (lower.endsWith('.escalationrules-meta.xml'))  return 'Escalation Rules Meta';
+    if (lower.endsWith('.matchingrules-meta.xml'))    return 'Matching Rules Meta';
+    if (lower.endsWith('.matchingrule-meta.xml'))     return 'Matching Rule Meta';
+    if (lower.endsWith('.duplicaterule-meta.xml'))    return 'Duplicate Rule Meta';
+
+    // Reports & Dashboards
+    if (lower.endsWith('.report-meta.xml'))           return 'Report Meta';
+    if (lower.endsWith('.dashboard-meta.xml'))        return 'Dashboard Meta';
+    if (lower.endsWith('.reporttype-meta.xml'))       return 'Report Type Meta';
+    if (lower.endsWith('.reportfolder-meta.xml'))     return 'Report Folder Meta';
+    if (lower.endsWith('.dashboardfolder-meta.xml'))  return 'Dashboard Folder Meta';
+
+    // Email
+    if (lower.endsWith('.email-meta.xml'))            return 'Email Template Meta';
+    if (lower.endsWith('.emailtemplate-meta.xml'))     return 'Email Template Meta';
+    if (lower.endsWith('.emailfolder-meta.xml'))       return 'Email Folder Meta';
+    if (lower.endsWith('.letterhead-meta.xml'))        return 'Letterhead Meta';
+
+    // Permissions & Profiles
+    if (lower.endsWith('.profile-meta.xml'))          return 'Profile Meta';
+    if (lower.endsWith('.permissionset-meta.xml'))    return 'Permission Set Meta';
+    if (lower.endsWith('.permissionsetgroup-meta.xml')) return 'Permission Set Group Meta';
+    if (lower.endsWith('.role-meta.xml'))             return 'Role Meta';
+    if (lower.endsWith('.group-meta.xml'))            return 'Public Group Meta';
+
+    // Sharing Rules
+    if (lower.endsWith('.sharingrules-meta.xml'))     return 'Sharing Rules Meta';
+    if (lower.endsWith('.sharingownerrule-meta.xml')) return 'Sharing Owner Rule Meta';
+    if (lower.endsWith('.sharingcriteriabasedrule-meta.xml')) return 'Sharing Criteria Rule Meta';
+    if (lower.endsWith('.sharingguestrule-meta.xml')) return 'Sharing Guest Rule Meta';
+
+    // Custom Labels & Translations
+    if (lower.endsWith('.labels-meta.xml'))           return 'Custom Labels Meta';
+    if (lower.endsWith('.customlabel-meta.xml'))      return 'Custom Label Meta';
+    if (lower.endsWith('.translation-meta.xml'))      return 'Translation Meta';
+    if (lower.endsWith('.objecttranslation-meta.xml')) return 'Object Translation Meta';
+    if (lower.endsWith('.globalvalueset-meta.xml'))   return 'Global Value Set Meta';
+    if (lower.endsWith('.globalvaluesettranslation-meta.xml')) return 'Global Value Set Translation Meta';
+    if (lower.endsWith('.standardvalueset-meta.xml')) return 'Standard Value Set Meta';
+
+    // Static Resources, Documents & Content
+    if (lower.endsWith('.resource-meta.xml'))         return 'Static Resource Meta';
+    if (lower.endsWith('.staticresource-meta.xml'))   return 'Static Resource Meta';
+    if (lower.endsWith('.document-meta.xml'))         return 'Document Meta';
+    if (lower.endsWith('.documentfolder-meta.xml'))   return 'Document Folder Meta';
+    if (lower.endsWith('.contentasset-meta.xml'))     return 'Content Asset Meta';
+
+    // Sites & Communities
+    if (lower.endsWith('.site-meta.xml'))             return 'Site Meta';
+    if (lower.endsWith('.sitedotcom-meta.xml'))       return 'Site.com Meta';
+    if (lower.endsWith('.network-meta.xml'))          return 'Community Meta';
+    if (lower.endsWith('.experiencebundle-meta.xml')) return 'Experience Bundle Meta';
+    if (lower.endsWith('.navigationmenu-meta.xml'))   return 'Navigation Menu Meta';
+
+    // Connected Apps & Auth
+    if (lower.endsWith('.connectedapp-meta.xml'))     return 'Connected App Meta';
+    if (lower.endsWith('.authprovider-meta.xml'))     return 'Auth Provider Meta';
+    if (lower.endsWith('.namedcredential-meta.xml'))  return 'Named Credential Meta';
+    if (lower.endsWith('.externalcredential-meta.xml')) return 'External Credential Meta';
+    if (lower.endsWith('.externaldatasource-meta.xml')) return 'External Data Source Meta';
+
+    // Custom Settings & Metadata Types
+    if (lower.endsWith('.custommetadata-meta.xml'))   return 'Custom Metadata Meta';
+    if (lower.endsWith('.md-meta.xml'))               return 'Custom Metadata Record Meta';
+    if (lower.endsWith('.globalvalueset-meta.xml'))   return 'Global Value Set Meta';
+
+    // Remote Site Settings
+    if (lower.endsWith('.remotesitesetting-meta.xml')) return 'Remote Site Setting Meta';
+    if (lower.endsWith('.cspsiteuri-meta.xml'))        return 'CSP Trusted Site Meta';
+    if (lower.endsWith('.corswhitelistorigin-meta.xml')) return 'CORS Whitelist Meta';
+
+    // Quick Actions
+    if (lower.endsWith('.quickaction-meta.xml'))      return 'Quick Action Meta';
+
+    // Path & Picklist
+    if (lower.endsWith('.pathassistant-meta.xml'))    return 'Path Meta';
+
+    // Lightning Bolt & Templates
+    if (lower.endsWith('.lightningbolt-meta.xml'))    return 'Lightning Bolt Meta';
+    if (lower.endsWith('.lightningexperiencetheme-meta.xml')) return 'Lightning Theme Meta';
+    if (lower.endsWith('.lightningmessagechannel-meta.xml')) return 'Message Channel Meta';
+
+    // Platform Events & Streaming
+    if (lower.endsWith('.platformeventchannel-meta.xml'))    return 'Platform Event Channel Meta';
+    if (lower.endsWith('.platformeventchannelmember-meta.xml')) return 'Platform Event Member Meta';
+
+    // Custom Notifications
+    if (lower.endsWith('.customnotificationtype-meta.xml'))   return 'Custom Notification Meta';
+
+    // Settings
+    if (lower.endsWith('.settings-meta.xml'))         return 'Settings Meta';
+
+    // Home Page
+    if (lower.endsWith('.homepagelayout-meta.xml'))   return 'Home Page Layout Meta';
+    if (lower.endsWith('.homepagecomponent-meta.xml')) return 'Home Page Component Meta';
+
+    // Data Categories
+    if (lower.endsWith('.datacategorygroup-meta.xml')) return 'Data Category Group Meta';
+
+    // Entitlement
+    if (lower.endsWith('.entitlementprocess-meta.xml')) return 'Entitlement Process Meta';
+    if (lower.endsWith('.milestoneType-meta.xml'))      return 'Milestone Type Meta';
+
+    // Territory
+    if (lower.endsWith('.territory2model-meta.xml'))  return 'Territory Model Meta';
+    if (lower.endsWith('.territory2type-meta.xml'))   return 'Territory Type Meta';
+    if (lower.endsWith('.territory2rule-meta.xml'))   return 'Territory Rule Meta';
+
+    // Einstein / AI
+    if (lower.endsWith('.bot-meta.xml'))              return 'Einstein Bot Meta';
+    if (lower.endsWith('.botversion-meta.xml'))       return 'Einstein Bot Version Meta';
+    if (lower.endsWith('.mlprediction-meta.xml'))     return 'ML Prediction Meta';
+
+    // Omnichannel
+    if (lower.endsWith('.queueroutingconfig-meta.xml'))  return 'Queue Routing Config Meta';
+    if (lower.endsWith('.serviceChannel-meta.xml'))      return 'Service Channel Meta';
+    if (lower.endsWith('.presenceDeclineReason-meta.xml')) return 'Presence Decline Reason Meta';
+    if (lower.endsWith('.presenceUserConfig-meta.xml'))   return 'Presence User Config Meta';
+
+    // Misc
+    if (lower.endsWith('.queue-meta.xml'))            return 'Queue Meta';
+    if (lower.endsWith('.recordactiondeployment-meta.xml')) return 'Record Action Meta';
+    if (lower.endsWith('.cleanrule-meta.xml'))        return 'Clean Rule Meta';
+    if (lower.endsWith('.testSuite-meta.xml'))        return 'Test Suite Meta';
+    if (lower.endsWith('.apexTestSuite-meta.xml'))    return 'Apex Test Suite Meta';
+
+    // ── Catch-all para cualquier -meta.xml no listado ──
+    if (lower.endsWith('-meta.xml'))                  return 'SF Metadata';
+
+    // ── Archivos fuente (no metadata) ──
+    if (lower.endsWith('.cls'))       return 'Apex Class';
+    if (lower.endsWith('.trigger'))   return 'Apex Trigger';
+    if (lower.endsWith('.page'))      return 'VF Page';
     if (lower.endsWith('.component')) return 'VF Component';
-    if (lower.endsWith('.cmp')) return 'Aura Component';
-    if (lower.endsWith('.js')) return 'JavaScript';
-    if (lower.endsWith('.ts')) return 'TypeScript';
-    if (lower.endsWith('.jsx')) return 'JSX';
-    if (lower.endsWith('.tsx')) return 'TSX';
-    if (lower.endsWith('.html')) return 'HTML';
-    if (lower.endsWith('.css')) return 'CSS';
-    if (lower.endsWith('.xml')) return 'XML';
-    if (lower.endsWith('.json')) return 'JSON';
+    if (lower.endsWith('.cmp'))       return 'Aura Component';
+    if (lower.endsWith('.js'))        return 'JavaScript';
+    if (lower.endsWith('.ts'))        return 'TypeScript';
+    if (lower.endsWith('.jsx'))       return 'JSX';
+    if (lower.endsWith('.tsx'))       return 'TSX';
+    if (lower.endsWith('.html'))      return 'HTML';
+    if (lower.endsWith('.css'))       return 'CSS';
+    if (lower.endsWith('.xml'))       return 'XML';
+    if (lower.endsWith('.json'))      return 'JSON';
     if (lower.endsWith('.yaml') || lower.endsWith('.yml')) return 'YAML';
-    if (lower.endsWith('.py')) return 'Python';
-    if (lower.endsWith('.java')) return 'Java';
-    if (lower.endsWith('.cs')) return 'C#';
+    if (lower.endsWith('.py'))        return 'Python';
+    if (lower.endsWith('.java'))      return 'Java';
+    if (lower.endsWith('.cs'))        return 'C#';
     if (lower.endsWith('.cpp') || lower.endsWith('.c') || lower.endsWith('.h')) return 'C/C++';
-    if (lower.endsWith('.rb')) return 'Ruby';
-    if (lower.endsWith('.php')) return 'PHP';
-    if (lower.endsWith('.sql')) return 'SQL';
+    if (lower.endsWith('.rb'))        return 'Ruby';
+    if (lower.endsWith('.php'))       return 'PHP';
+    if (lower.endsWith('.sql'))       return 'SQL';
     if (lower.endsWith('.sh') || lower.endsWith('.bash')) return 'Shell';
-    if (lower.endsWith('.md')) return 'Markdown';
-    if (lower.endsWith('.txt')) return 'Text';
-    if (lower.endsWith('.csv')) return 'CSV';
-    if (lower.endsWith('.log')) return 'Log';
+    if (lower.endsWith('.md'))        return 'Markdown';
+    if (lower.endsWith('.txt'))       return 'Text';
+    if (lower.endsWith('.csv'))       return 'CSV';
+    if (lower.endsWith('.log'))       return 'Log';
     if (lower.endsWith('.properties')) return 'Properties';
     if (lower.endsWith('.cfg') || lower.endsWith('.conf') || lower.endsWith('.ini')) return 'Config';
 
@@ -324,7 +509,7 @@ if (exportExcelBtn) {
         ultimosResultados.forEach(r => {
             wsData.push([
                 r.termino,
-                '.' + r.nombreArchivo.split('.').pop(),
+                '.' + r.nombreArchivo.split('.').slice(1).join('.'),
                 r.tipoMetadata,
                 r.archivo,
                 r.lineaNumero,
