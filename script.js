@@ -1,4 +1,4 @@
-// Obtener elementos del HTML
+
 const searchBtn = document.getElementById('searchBtn');
 const searchTerms = document.getElementById('searchTerms');
 const results = document.getElementById('results');
@@ -6,7 +6,7 @@ const resultsContent = document.getElementById('resultsContent');
 const exportExcelBtn = document.getElementById('exportExcelBtn');
 const resultsCount = document.getElementById('resultsCount');
 
-// Elementos de selección
+
 const selectFolderBtn = document.getElementById('selectFolderBtn');
 const selectFilesBtn = document.getElementById('selectFilesBtn');
 const folderInput = document.getElementById('folderInput');
@@ -19,7 +19,7 @@ let selectedFiles = [];
 let selectionType = 'folder';
 let ultimosResultados = [];
 
-// Extensiones binarias que NO se deben leer (no son texto)
+
 const BINARY_EXTENSIONS = [
     '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.ico', '.svg',
     '.zip', '.rar', '.7z', '.tar', '.gz',
@@ -30,14 +30,14 @@ const BINARY_EXTENSIONS = [
     '.class', '.jar', '.pyc',
 ];
 
-// Carpetas que se deben ignorar
+
 const IGNORED_FOLDERS = [
     '/.git/', '/node_modules/', '/.sfdx/', '/.sf/',
     '/dist/', '/build/', '/__pycache__/',
     '/.vscode/', '/.idea/',
 ];
 
-// Verificar si un archivo se debe ignorar
+
 function debeIgnorar(filePath) {
     const lower = filePath.toLowerCase().replace(/\\/g, '/');
 
@@ -53,7 +53,7 @@ function debeIgnorar(filePath) {
     return false;
 }
 
-// Obtener tipo de archivo por extensión
+
 function getTipoArchivo(filePath) {
     const lower = filePath.toLowerCase();
     if (lower.endsWith('.cls')) return 'Apex Class';
@@ -89,7 +89,7 @@ function getTipoArchivo(filePath) {
     return ext ? ext.toUpperCase() : 'File';
 }
 
-// Cuando se hace clic en "Select Folder"
+
 selectFolderBtn.addEventListener('click', function() {
     selectionType = 'folder';
     updateActiveButton();
@@ -97,7 +97,7 @@ selectFolderBtn.addEventListener('click', function() {
     folderInput.click();
 });
 
-// Cuando se hace clic en "Select Files"
+
 selectFilesBtn.addEventListener('click', function() {
     selectionType = 'files';
     updateActiveButton();
@@ -105,7 +105,6 @@ selectFilesBtn.addEventListener('click', function() {
     filesInput.click();
 });
 
-// Actualizar botón activo
 function updateActiveButton() {
     if (selectionType === 'folder') {
         selectFolderBtn.classList.add('active');
@@ -148,7 +147,7 @@ filesInput.addEventListener('change', function(e) {
     }
 });
 
-// Cuando se hace clic en el botón de búsqueda
+
 searchBtn.addEventListener('click', async function() {
     if (selectedFiles.length === 0) {
         alert('Please select a folder or files first');
@@ -325,7 +324,7 @@ if (exportExcelBtn) {
         ultimosResultados.forEach(r => {
             wsData.push([
                 r.termino,
-                r.nombreArchivo,
+                '.' + r.nombreArchivo.split('.').pop(),
                 r.tipoMetadata,
                 r.archivo,
                 r.lineaNumero,
